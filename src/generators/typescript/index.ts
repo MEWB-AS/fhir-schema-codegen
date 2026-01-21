@@ -283,8 +283,10 @@ class TypeScriptGenerator extends Generator {
 
     generateProfileType(schema: TypeSchema) {
         const name = resourceName(schema.identifier);
+        const parent = fmap(normalizeName)(canonicalToName(schema.base?.url));
+        const extendsClause = parent && `extends ${parent}`;
         this.debugComment(schema.identifier);
-        this.curlyBlock(['export', 'interface', name], () => {
+        this.curlyBlock(['export', 'interface', name, extendsClause], () => {
             this.lineSM(`__profileUrl: '${schema.identifier.url}'`);
             this.line();
 
