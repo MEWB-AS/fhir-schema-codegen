@@ -3,7 +3,11 @@ import path from 'node:path';
 import { type Command as Commander, Option } from 'commander';
 import { GeneratorError, generatorsRegistry } from '../generators-registry';
 import { logger } from '../logger';
-import { executeTypeSchema, TYPE_SCHEMA_VERSION } from '../utils/type-schema';
+import {
+    executeTypeSchema,
+    TYPE_SCHEMA_VERSION,
+    type TypeSchemaOptions,
+} from '../utils/type-schema';
 import { BaseCommand } from './command';
 import crypto from 'node:crypto';
 
@@ -128,14 +132,18 @@ export class GenerateCommand extends BaseCommand {
                             );
                             let typeSchemaNdJson: string | undefined = undefined;
                             try {
-                                typeSchemaNdJson = await executeTypeSchema(
-                                    options.packages,
-                                    TYPE_SCHEMA_VERSION,
-                                    options.typeSchemaExec,
-                                    options.fhirSchema,
-                                    cacheDir,
-                                    cachePath,
-                                );
+                                const typeSchemaOptions: TypeSchemaOptions = {
+                                includeProfileConstraints: options.profile,
+                            };
+                            typeSchemaNdJson = await executeTypeSchema(
+                                options.packages,
+                                TYPE_SCHEMA_VERSION,
+                                options.typeSchemaExec,
+                                options.fhirSchema,
+                                cacheDir,
+                                cachePath,
+                                typeSchemaOptions,
+                            );
                             } catch {
                                 logger.warn(
                                     'Failed to generate type schema, trying to collect a cashed version...',

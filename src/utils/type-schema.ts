@@ -61,6 +61,10 @@ async function downloadBinary(url: string, destination: string): Promise<void> {
     }
 }
 
+export interface TypeSchemaOptions {
+    includeProfileConstraints?: boolean;
+}
+
 export async function executeTypeSchema(
     packages: string[],
     version: string = TYPE_SCHEMA_VERSION,
@@ -68,6 +72,7 @@ export async function executeTypeSchema(
     fhirSchemas?: string[],
     outputDir = './tmp',
     outputFile = './tmp/type-schema.ndjson',
+    options: TypeSchemaOptions = {},
 ): Promise<string> {
     const binaryPath = customExecCommand || (await ensureBinaryExists(version));
 
@@ -101,6 +106,9 @@ export async function executeTypeSchema(
         fhirSchemas.forEach((schema) => {
             cmdParts.push('--fhir-schema', schema);
         });
+    }
+    if (options.includeProfileConstraints) {
+        cmdParts.push('--include-profile-constraints');
     }
     cmdParts.push('--output', outputFile);
     logger.debug(`Exec: ${cmdParts.join(' ')}`);
